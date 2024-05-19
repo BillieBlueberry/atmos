@@ -1,16 +1,17 @@
 
 -- Construct Atmos Class
 Atmos = Atmos or AtmosClass();
+GetRPTime = true
 
 atmos_log( "Atmos created " .. tostring( Atmos ) );
 
--- Precache assets
-util.PrecacheSound( "atmos/rain.wav" );
-util.PrecacheSound( "atmos/thunder/thunder_1.mp3" );
-util.PrecacheSound( "atmos/thunder/thunder_2.mp3" );
-util.PrecacheSound( "atmos/thunder/thunder_3.mp3" );
-util.PrecacheSound( "atmos/thunder/thunder_4.mp3" );
-util.PrecacheSound( "atmos/thunder/thunder_5.mp3" );
+function GetRPTime()
+
+	--local timeMul = ( Atmos:GetSettings().TimeMul || 0.002 )
+	local currentTime = Atmos:GetSky().Time
+	return currentTime*150+800, 3500
+
+end
 
 -- Hooks
 hook.Add( "Initialize", "AtmosInit", function()
@@ -29,12 +30,6 @@ hook.Add( "PlayerInitialSpawn", "AtmosPlayerInit", function( pl )
 	if ( IsValid( pl ) ) then
 
 	  Atmos.Settings:SendSettings( pl );
-
-		timer.Simple( 0.1, function()
-
-			Atmos:SendWeather( pl );
-
-		end );
 
 	end
 
@@ -72,20 +67,6 @@ hook.Add( "InitPostEntity", "AtmosInitPost", function()
 	local sky = SkyClass();
 
 	Atmos:SetSky( sky );
-
-	-- Construct Fog class
-	local fog = FogClass();
-
-	Atmos:SetFog( fog );
-
-	if SERVER then
-
-		-- Construct Wind class
-		local wind = WindClass();
-
-		Atmos:SetWind( wind );
-
-	end
 
 end );
 

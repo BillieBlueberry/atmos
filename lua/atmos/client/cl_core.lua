@@ -6,38 +6,6 @@ net.Receive( "atmos_lightmaps", function( len )
 
 end );
 
-net.Receive( "atmos_weather", function( len )
-
-	local enable = net.ReadBool();
-	local id = net.ReadUInt( 8 );
-
-	atmos_log( string.format( "atmos_weather %s %s", tostring( enable ), tostring( id ) ) );
-
-	local weather = Atmos:GetWeatherByID( id );
-
-	if !weather then Atmos:SetWeather( nil ) return end -- Sanity check
-
-	if enable then
-		Atmos:SetWeather( weather );
-		weather:Start();
-	else
-		Atmos:SetWeather( nil );
-		weather:Finish();
-	end
-
-end );
-
--- Hooks
-hook.Add( "HUDPaint", "AtmosHUDPaint", function()
-
-	if ( IsValid( Atmos ) ) then
-
-		Atmos:HUDPaint();
-
-	end
-
-end );
-
 hook.Add( "InitPostEntity", "AtmosFirstJoinLightmaps", function()
 
 	render.RedownloadAllLightmaps();

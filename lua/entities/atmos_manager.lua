@@ -47,23 +47,6 @@ function ENT:Think()
 
 	end
 
-	-- allow weather to have a special transition mul speed
-	local weather = Atmos:GetWeather();
-
-	if ( IsValid( weather ) and weather.SpecialTransitionMul and self:GetTransitionMul() != weather.TransitionMul ) then
-
-		self:SetTransitionMul( weather.TransitionMul );
-
-	end
-
-	if ( !IsValid( weather ) and self:GetTransitionMul() != Atmos:GetSettings().TransitionMul ) then
-
-		atmos_log( "atmos_manager SetTransitionMul " .. tostring( Atmos ) .. " " .. tostring( Atmos:GetSettings() ) .. " " .. tostring( Atmos:GetSettings().TransitionMul ) );
-
-		self:SetTransitionMul( Atmos:GetSettings().TransitionMul );
-
-	end
-
 end
 
 function ENT:CanEditVariables( ply )

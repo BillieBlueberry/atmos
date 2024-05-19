@@ -126,9 +126,11 @@ function SkyClass:UpdateTime()
 	if ( Atmos:GetSettings().Paused ) then return end
 	if ( !IsValid( g_AtmosManager ) ) then return end
 
+	self.Time = self.Time || 1
+
 	self.Time = (Atmos:GetSettings().Realtime and self:GetRealTime() or self.Time + (FrameTime() * Atmos:GetSettings().TimeMul));
 
-	if ( self.Time >= 24 ) then
+	if ( self.Time > 23.99 ) then
 
 		self.Time = 0;
 
@@ -173,16 +175,8 @@ function SkyClass:UpdateLighting()
 
 	end
 
-	local weather = Atmos:GetWeather();
 	local maxDarkness = self.MaxDarkness;
 	local maxLightness = self.MaxLightness;
-
-	if ( IsValid( weather ) and weather:ShouldUpdateLighting() ) then
-
-		maxDarkness = weather.MaxDarkness;
-		maxLightness = weather.MaxLightness;
-
-	end
 
 	local s = string.char( math.Round( Lerp( mul, string.byte( maxDarkness ), string.byte( maxLightness ) ) ) );
 
@@ -199,7 +193,6 @@ function SkyClass:UpdateSun()
 	if ( !IsValid( self.Sun ) ) then return end
 	if ( CurTime() < self.NextSunUpdate ) then return end
 
-	local cloudy = IsValid( Atmos:GetWeather() ) and Atmos:GetWeather():IsCloudy();
 	local night = ((self.Time < 4 or self.Time > 20) and true or false);
 	local mul = 1 - ( self.Time - 4 ) / 16;
 	local ang = Angle( 180 * mul, 0, 0 );
@@ -225,7 +218,7 @@ function SkyClass:UpdateSun()
 	-- update map shadows based on sun direction
 	self:UpdateShadows( ang );
 
-	if ( cloudy or night ) then
+	if ( night ) then
 
 		if ( lastSunState == nil or lastSunState ) then
 
@@ -367,34 +360,12 @@ function SkyClass:UpdateSkybox()
 
 	end
 
-	if ( IsValid( Atmos:GetWeather() ) and Atmos:GetWeather():ShouldUpdateSky() ) then
-
-		self.NextSky = Atmos:GetWeather():GetSkyColors( self.Time );
-
-	end
-
 	local starTexture = self.SkyPaint:GetStarTexture();
-	local cloudy = (IsValid( Atmos:GetWeather() ) and Atmos:GetWeather():IsCloudy());
 
-	if ( cloudy and starTexture != "skybox/clouds" ) then
-
-		self.SkyPaint:SetStarTexture( "skybox/clouds" );
-		self.SkyPaint:SetStarScale( 1 );
-		self.SkyPaint:SetStarFade( 0.4 );
-		self.SkyPaint:SetStarSpeed( 0.03 );
-
-		atmos_log( "skybox set to " .. tostring( self.SkyPaint:GetStarTexture() ) );
-
-	elseif ( !cloudy and starTexture != "atmos/starfield" ) then
-
-		self.SkyPaint:SetStarTexture( "atmos/starfield" );
-		self.SkyPaint:SetStarScale( 0.5 );
-		self.SkyPaint:SetStarFade( 1.5 );
-		self.SkyPaint:SetStarSpeed( 0.01 );
-
-		atmos_log( "skybox set to " .. tostring( self.SkyPaint:GetStarTexture() ) );
-
-	end
+	self.SkyPaint:SetStarTexture( "models/props_lab/warp_sheet" );
+	self.SkyPaint:SetStarScale( 0.5 );
+	self.SkyPaint:SetStarFade( 1.5 );
+	self.SkyPaint:SetStarSpeed( 0.01 );
 
 	if ( self.CurrentSky == nil ) then
 
@@ -462,7 +433,8 @@ end
 
 local moonColor = Color( 255, 255, 255, 0 );
 local moonAngle = Angle( 0, 0, 0 );
-local moonMat = Material( "atmos/moon.png" );
+local glowMat = Material( "sprites/light_glow02_add" );
+local moonMat = Material( "materials/environment/moon.png" );
 local devCVar = GetConVar( "developer" );
 moonMat:SetInt( "$additive", 0 );
 moonMat:SetInt( "$translucent", 0 );
@@ -470,6 +442,8 @@ moonMat:SetInt( "$translucent", 0 );
 function SkyClass:RenderMoon()
 
 	if ( !IsValid( g_AtmosManager ) ) then return end
+
+	self.Time = self.Time || 1
 
 	local night = ((self.Time < 4 or self.Time > 20) and true or false);
 
@@ -486,9 +460,14 @@ function SkyClass:RenderMoon()
 
 		moonColor.a = Lerp( FrameTime() * 1, moonColor.a, 255 );
 
-		local moonSize = Atmos:GetSettings().MoonSize;
+		local moonSize = 500
 
 		cam.Start3D( vector_origin, self.LastSceneAngles );
+			render.OverrideDepthEnable( true, false );
+			render.SetMaterial( glowMat );
+			render.DrawQuadEasy( pos, normal, 1000+moonSize, 1000+moonSize, moonColor, -180 );
+			render.OverrideDepthEnable( false, false );
+
 			render.OverrideDepthEnable( true, false );
 			render.SetMaterial( moonMat );
 			render.DrawQuadEasy( pos, normal, moonSize, moonSize, moonColor, -180 );

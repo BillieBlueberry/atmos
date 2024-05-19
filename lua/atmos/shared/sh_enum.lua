@@ -8,4 +8,4 @@ ATMOS_LINK      = "https://scriptfodder.com/scripts/view/007"; -- link to Atmos 
 TIME_DAWN       = 6;
 TIME_NOON       = 12;
 TIME_DUSK       = 18;
-TIME_NIGHT      = 24;
+TIME_NIGHT      = 0;

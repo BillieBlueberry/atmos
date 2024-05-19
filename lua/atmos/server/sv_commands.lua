@@ -56,7 +56,7 @@ local function AddAdminCommand( cmd, cmdargs, help, fn )
 
   concommand.Add( name, func, nil, tostring( help ) );
 
-  table.insert( AdminCommands, command );
+  --table.insert( AdminCommands, command );
 
 end
 
@@ -109,30 +109,6 @@ local function AddCvar( name, default, help, client, cb )
   end
 
   table.insert( Cvars, cvar );
-
-end
-
-local function GetWeatherByName( name )
-
-  name = string.lower( tostring( name ) );
-
-  local weathers = Atmos:GetWeathers();
-  local newWeather = nil;
-
-  for k, v in pairs( weathers ) do
-
-    local weatherName = string.lower( tostring( v ) );
-
-    if ( weatherName == name ) then
-
-      newWeather = weathers[ k ];
-      break;
-
-    end
-
-  end
-
-  return newWeather;
 
 end
 
@@ -353,45 +329,3 @@ AddAdminCommand( "unpause", nil, "unpauses time", function( pl, cmd, args )
   Atmos:GetSettings().Paused = false;
 
 end );
-
-AddAdminCommand( "listweathers", nil, "lists all registered weathers", function( pl, cmd, args )
-
-  PrintConsole( pl, "Registered Weathers\n" );
-
-  for k, v in pairs( Atmos:GetWeathers() ) do
-
-    PrintConsole( pl, string.lower( tostring( v ) ) .. "\n" );
-
-  end
-
-end );
-
-AddAdminCommand( "startweather", { "[weather]" }, "starts the specified weather", function( pl, cmd, args )
-
-  local newWeather = GetWeatherByName( tostring( args[1] ) );
-
-  if ( newWeather != nil ) then
-
-    if ( IsValid( Atmos:GetWeather() ) ) then
-
-      Atmos:FinishWeather();
-
-    end
-
-    Atmos:StartWeather( newWeather );
-
-  end
-
-end );
-
-AddAdminCommand( "stopweather", nil, "stops any active weather", function( pl, cmd, args )
-
-    Atmos:FinishWeather();
-
-end );
-
--- Server Cvars
-AddCvar( "weather", "1", "enables or disables weather", false );
-
--- Client Cvars
-AddCvar( "hudeffects", "1", "enables or disables client-side hud effects", true );

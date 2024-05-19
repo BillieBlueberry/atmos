@@ -50,76 +50,27 @@ function SettingsClass:__constructor()
 		}
 	};
 
-	local FogValues = {
-		[TIME_DAWN] = {
-			FogStart = 0.0,
-			FogEnd = 25000.0,
-			FogDensity = 0.3,
-			FogColor = Vector( 0.6, 0.7, 0.8 )
-		},
-		[TIME_NOON] = {
-			FogStart = 0.0,
-			FogEnd = 35000.0,
-			FogDensity = 0.0,
-			FogColor = Vector( 0.6, 0.7, 0.8 )
-		},
-		[TIME_DUSK] = {
-			FogStart = 0.0,
-			FogEnd = 55000.0,
-			FogDensity = 0.1,
-			FogColor = Vector( 0.6, 0.7, 0.8 )
-		},
-		[TIME_NIGHT] = {
-			FogStart = 0.0,
-			FogEnd = 45000.0,
-			FogDensity = 0.1,
-			FogColor = Vector( 0.6, 0.7, 0.8 )
-		}
-	};
-
 	self.ServerSettings = {
 		Version = ATMOS_VERSION,
 		Enabled = true,
-		Fog = true,
 		Shadows = true,
-		Weather = true, -- TODO: implement weather (light rain, thunder storm, blizzard, dust storm)
-		Wind = true,
-		Earthquakes = true, -- TODO: implement earthquakes
-		StartTime = 4.0,
+		StartTime = 17.85,
 		Paused = false,
 		Realtime = false,
-		TimeMul = 0.01,
-		WeatherChance = 25,
-		WeatherCheck = 5 * 60,
-		WeatherLength = 10 * 60,
+		TimeMul = 0.002,
 		TransitionMul = 1,
 		TimeUpdateDelay = 0,
 		SunUpdateDelay = 0,
 		MoonDistance = 14000,
-		MoonSize = 3000,
-		Blacklist = { "tornado" },
-		WeatherBlacklist = {},
+		MoonSize = 500,
 		Admins = {},
-		SkyColors = SkyColors,
-		FogValues = FogValues
+		SkyColors = SkyColors
 	};
 
 	self.ClientSettings = {
 		MaxParticles = 5000,
 		VolumeMultiplier = 1,
-		RainSmoke = true,
-		RainSplashes = true,
-		RainDieTime = 3,
-		RainRadius = 900,
-		RainCount = 60,
-		RainSmokeChance = 10,
-		RainHeightMax = 300,
-		SnowDieTime = 3,
-		SnowRadius = 1200,
-		SnowCount = 20,
-		SnowHeightMax = 200,
-		SkyColors = SkyColors,
-		FogValues = FogValues
+		SkyColors = SkyColors
 	};
 
 	self.Settings = table.Copy( self:GetInternalSettings() );
@@ -160,16 +111,16 @@ function SettingsClass:Save()
 	end
 
 	-- preserve floating point precision
-	local settings = atmos_ntos( self:GetInternalSettings() );
-	local settingsPath = (SERVER && "atmos/sv_settings.txt" || "atmos/cl_settings.txt");
+	--local settings = atmos_ntos( self:GetInternalSettings() );
+	--local settingsPath = (SERVER && "atmos/sv_settings.txt" || "atmos/cl_settings.txt");
 
-	file.Write( settingsPath, util.TableToJSON( settings, true ) );
+	--file.Write( settingsPath, util.TableToJSON( settings, true ) );
 
 end
 
 function SettingsClass:Load()
 
-	atmos_log( "loading settings..." );
+	/*atmos_log( "loading settings..." );
 
 	local settingsPath = (SERVER && "atmos/sv_settings.txt" || "atmos/cl_settings.txt");
 
@@ -212,14 +163,14 @@ function SettingsClass:Load()
 
 		self:SendSettings();
 
-	end
+	end*/
 
 end
 
 function SettingsClass:LoadMap()
 
 	-- check if map specific settings exist, if so override default global settings
-	local mapSettingsPath = "atmos/maps/" .. Atmos:GetMap() .. ".txt";
+	/*local mapSettingsPath = "atmos/maps/" .. Atmos:GetMap() .. ".txt";
 
 	if ( file.Exists( mapSettingsPath, "DATA" ) ) then
 
@@ -242,7 +193,7 @@ function SettingsClass:LoadMap()
 
 		atmos_log( "map settings loaded." );
 
-	end
+	end*/
 
 end
 
